@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  mysql:
+    image: docker.io/library/mysql:8.0
+    container_name: shop_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: shop
+      MYSQL_USER: shop_user
+      MYSQL_PASSWORD: shop_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - shop_network
+
+  redis:
+    image: docker.io/library/redis:alpine
+    container_name: shop_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - shop_network
+
+  backend:
+    image: docker.io/library/php:8.2-fpm
+    container_name: shop_backend
+    working_dir: /var/www/html
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - shop_network
+    depends_on:
+      - mysql
+      - redis
+    # We will use this simply for CLI/composer commands later,
+    # or expose via a small internal PHP dev server for now.
+    command: php -S 0.0.0.0:8000 -t public
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: docker.io/library/node:20-alpine
+    container_name: shop_frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    networks:
+      - shop_network
+    # Keeps the container alive even if frontend is empty
+    command: sh -c "if [ -f package.json ]; then npm run dev; else tail -f /dev/null; fi"
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  shop_network:
+    driver: bridge
