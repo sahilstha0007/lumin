@@ -26,7 +26,9 @@ services:
       - shop_network
 
   backend:
-    image: docker.io/library/php:8.2-fpm
+    build:
+      context: ./backend 
+      dockerfile: Dockerfile
     container_name: shop_backend
     working_dir: /var/www/html
     volumes:
