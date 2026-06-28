@@ -1,5 +1,5 @@
-FROM php:8.2-cli
-
+FROM docker.io/composer:latest AS composer
+FROM php:8.4-fpm
 # Dependencies
 
 RUN apt-get update && apt-get install -y \
@@ -14,7 +14,7 @@ RUN docker-php-ext-install pdo pdo_mysql zip
 
 
 
-COPY --from=composer:latest /usr/bin/composer /user/bin/composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
