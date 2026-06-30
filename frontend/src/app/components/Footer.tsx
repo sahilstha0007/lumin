@@ -117,7 +117,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-4 text-muted text-sm">
               <li>
-                <Link href="/about-us" className="hover:text-accent transition">
+                <Link href="/about" className="hover:text-accent transition">
                   About Us
                 </Link>
               </li>
